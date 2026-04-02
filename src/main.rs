@@ -2,6 +2,37 @@
 use std::env;
 use std::fs;
 
+enum TokenType {
+    // Single-character tokens
+    LeftParen,
+    RightParen,
+    LeftBrace,
+    RightBrace,
+    Star,
+    Dot,
+    Comma,
+    Plus,
+    Minus,
+    Semicolon,
+    Slash,
+    // One or two character tokens
+    Bang,
+    BangEqual,
+    Equal,
+    EqualEqual,
+    Greater,
+    GreaterEqual,
+    Less,
+    LessEqual,
+}
+
+struct Token {
+    token_type: TokenType,
+    lexeme: String,
+    line: usize,
+}
+
+// TODO: Add some helper functions, enums and structs.
 fn main() {
     let args: Vec<String> = env::args().collect();
     if args.len() < 3 {
