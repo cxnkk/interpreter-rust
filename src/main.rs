@@ -20,6 +20,7 @@ enum TokenType {
     Minus,
     Semicolon,
     Slash,
+    Eof,
     // One or two character tokens
     Bang,
     BangEqual,
@@ -31,9 +32,14 @@ enum TokenType {
     LessEqual,
 }
 
+enum Literal {
+    None,
+}
+
 struct Token {
     token_type: TokenType,
     lexeme: String,
+    literal: Literal,
     line: usize,
 }
 
