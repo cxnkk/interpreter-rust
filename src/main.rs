@@ -1,7 +1,12 @@
 #![allow(unused_variables)]
+mod scanner;
+
 use std::env;
 use std::fs;
 
+struct Scanner {
+    source: String,
+}
 enum TokenType {
     // Single-character tokens
     LeftParen,
