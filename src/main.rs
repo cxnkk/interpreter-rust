@@ -1,12 +1,13 @@
 #![allow(unused_variables)]
 mod scanner;
 
+use core::fmt;
 use std::env;
 use std::fs;
 
-struct Scanner {
-    source: String,
-}
+use crate::scanner::Scanner;
+
+#[derive(Debug, Clone)]
 enum TokenType {
     // Single-character tokens
     LeftParen,
@@ -32,10 +33,12 @@ enum TokenType {
     LessEqual,
 }
 
+#[derive(Debug, Clone)]
 enum Literal {
     None,
 }
 
+#[derive(Debug, Clone)]
 struct Token {
     token_type: TokenType,
     lexeme: String,
@@ -43,7 +46,42 @@ struct Token {
     line: usize,
 }
 
-// TODO: Add some helper functions, enums and structs.
+impl fmt::Display for Token {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let type_str = match self.token_type {
+            TokenType::LeftParen => "LEFT_PAREN",
+            TokenType::RightParen => "RIGHT_PAREN",
+            TokenType::LeftBrace => "LEFT_BRACE",
+            TokenType::RightBrace => "RIGHT_BRACE",
+            TokenType::Star => "STAR",
+            TokenType::Dot => "DOT",
+            TokenType::Comma => "COMMA",
+            TokenType::Plus => "PLUS",
+            TokenType::Minus => "MINUS",
+            TokenType::Semicolon => "SEMICOLON",
+            TokenType::Slash => "SLASH",
+            TokenType::Eof => "EOF",
+            TokenType::Bang => "BANG",
+            TokenType::BangEqual => "BANG_EQUAL",
+            TokenType::Equal => "EQUAL",
+            TokenType::EqualEqual => "EQUAL_EQUAL",
+            TokenType::Greater => "GREATER",
+            TokenType::GreaterEqual => "GREATER_EQUAL",
+            TokenType::Less => "LESS",
+            TokenType::LessEqual => "LESS_EQUAL",
+        };
+
+        let literal_str = match &self.literal {
+            Literal::None => "null",
+            // Literal::Str(s) => s.as_str(),
+            // Literal::Number(n) => ...
+        };
+
+        // Note: For EOF, the lexeme is empty, but we still print it.
+        write!(f, "{} {} {}", type_str, self.lexeme, literal_str)
+    }
+}
+
 fn main() {
     let args: Vec<String> = env::args().collect();
     if args.len() < 3 {
@@ -61,29 +99,14 @@ fn main() {
                 String::new()
             });
 
-            let mut had_error = false;
+            let mut scanner = Scanner::new(file_contents);
+            let tokens = scanner.scan_tokens();
 
-            for c in file_contents.chars() {
-                match c {
-                    '(' => println!("LEFT_PAREN ( null"),
-                    ')' => println!("RIGHT_PAREN ) null"),
-                    '{' => println!("LEFT_BRACE {{ null"),
-                    '}' => println!("RIGHT_BRACE }} null"),
-                    '*' => println!("STAR * null"),
-                    '.' => println!("DOT . null"),
-                    ',' => println!("COMMA , null"),
-                    '+' => println!("PLUS + null"),
-                    '-' => println!("MINUS - null"),
-                    ';' => println!("SEMICOLON ; null"),
-                    _ => {
-                        eprintln!("[line 1] Error: Unexpected character: {}", c);
-                        had_error = true;
-                    }
-                }
+            for token in tokens {
+                println!("{}", token);
             }
-            println!("EOF  null");
 
-            if had_error {
+            if scanner.had_error {
                 std::process::exit(65);
             }
         }
