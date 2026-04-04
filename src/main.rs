@@ -20,7 +20,6 @@ enum TokenType {
     Plus,
     Minus,
     Semicolon,
-    Slash,
     Eof,
     // One or two character tokens
     Bang,
@@ -38,11 +37,11 @@ enum Literal {
     None,
 }
 
-#[derive(Debug, Clone)]
 struct Token {
     token_type: TokenType,
     lexeme: String,
     literal: Literal,
+    #[allow(dead_code)]
     line: usize,
 }
 
@@ -59,7 +58,6 @@ impl fmt::Display for Token {
             TokenType::Plus => "PLUS",
             TokenType::Minus => "MINUS",
             TokenType::Semicolon => "SEMICOLON",
-            TokenType::Slash => "SLASH",
             TokenType::Eof => "EOF",
             TokenType::Bang => "BANG",
             TokenType::BangEqual => "BANG_EQUAL",
@@ -73,11 +71,8 @@ impl fmt::Display for Token {
 
         let literal_str = match &self.literal {
             Literal::None => "null",
-            // Literal::Str(s) => s.as_str(),
-            // Literal::Number(n) => ...
         };
 
-        // Note: For EOF, the lexeme is empty, but we still print it.
         write!(f, "{} {} {}", type_str, self.lexeme, literal_str)
     }
 }

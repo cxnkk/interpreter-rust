@@ -54,6 +54,38 @@ impl Scanner {
             '+' => self.add_token(TokenType::Plus),
             '-' => self.add_token(TokenType::Minus),
             ';' => self.add_token(TokenType::Semicolon),
+            '!' => {
+                let token_type = if self.match_char('=') {
+                    TokenType::BangEqual
+                } else {
+                    TokenType::Bang
+                };
+                self.add_token(token_type);
+            }
+            '=' => {
+                let token_type = if self.match_char('=') {
+                    TokenType::EqualEqual
+                } else {
+                    TokenType::Equal
+                };
+                self.add_token(token_type);
+            }
+            '>' => {
+                let token_type = if self.match_char('=') {
+                    TokenType::GreaterEqual
+                } else {
+                    TokenType::Greater
+                };
+                self.add_token(token_type);
+            }
+            '<' => {
+                let token_type = if self.match_char('=') {
+                    TokenType::LessEqual
+                } else {
+                    TokenType::Less
+                };
+                self.add_token(token_type);
+            }
             _ => {
                 eprintln!("[line {}] Error: Unexpected character: {}", self.line, c);
                 self.had_error = true;
@@ -75,5 +107,19 @@ impl Scanner {
             literal: Literal::None,
             line: self.line,
         });
+    }
+
+    fn match_char(&mut self, expected: char) -> bool {
+        if self.is_at_end() {
+            return false;
+        }
+
+        let c = self.source.as_bytes()[self.current] as char;
+        if c != expected {
+            return false;
+        }
+
+        self.current += 1;
+        true
     }
 }
