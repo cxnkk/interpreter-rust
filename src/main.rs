@@ -20,6 +20,7 @@ enum TokenType {
     Plus,
     Minus,
     Semicolon,
+    Slash,
     Eof,
     // One or two character tokens
     Bang,
@@ -58,6 +59,7 @@ impl fmt::Display for Token {
             TokenType::Plus => "PLUS",
             TokenType::Minus => "MINUS",
             TokenType::Semicolon => "SEMICOLON",
+            TokenType::Slash => "SLASH",
             TokenType::Eof => "EOF",
             TokenType::Bang => "BANG",
             TokenType::BangEqual => "BANG_EQUAL",

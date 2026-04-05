@@ -54,6 +54,15 @@ impl Scanner {
             '+' => self.add_token(TokenType::Plus),
             '-' => self.add_token(TokenType::Minus),
             ';' => self.add_token(TokenType::Semicolon),
+            '/' => {
+                let token_type = if self.match_char('/') {
+                    while self.peek() != '\n' && !self.is_at_end() {
+                        self.advance();
+                    }
+                } else {
+                    self.add_token(TokenType::Slash);
+                };
+            }
             '!' => {
                 let token_type = if self.match_char('=') {
                     TokenType::BangEqual
@@ -121,5 +130,12 @@ impl Scanner {
 
         self.current += 1;
         true
+    }
+
+    fn peek(&self) -> char {
+        if self.is_at_end() {
+            return '\0';
+        }
+        self.source.as_bytes()[self.current] as char
     }
 }
