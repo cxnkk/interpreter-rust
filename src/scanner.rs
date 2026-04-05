@@ -95,6 +95,8 @@ impl Scanner {
                 };
                 self.add_token(token_type);
             }
+            ' ' | '\r' | '\t' => {}
+            '\n' => self.line += 1,
             _ => {
                 eprintln!("[line {}] Error: Unexpected character: {}", self.line, c);
                 self.had_error = true;
