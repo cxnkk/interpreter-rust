@@ -31,10 +31,13 @@ enum TokenType {
     GreaterEqual,
     Less,
     LessEqual,
+    // Literals
+    String,
 }
 
 #[derive(Debug, Clone)]
 enum Literal {
+    Str(String),
     None,
 }
 
@@ -69,10 +72,12 @@ impl fmt::Display for Token {
             TokenType::GreaterEqual => "GREATER_EQUAL",
             TokenType::Less => "LESS",
             TokenType::LessEqual => "LESS_EQUAL",
+            TokenType::String => "STRING",
         };
 
         let literal_str = match &self.literal {
-            Literal::None => "null",
+            Literal::Str(s) => s.clone(),
+            Literal::None => "null".to_string(),
         };
 
         write!(f, "{} {} {}", type_str, self.lexeme, literal_str)

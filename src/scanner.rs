@@ -41,26 +41,42 @@ impl Scanner {
         self.current >= self.source.len()
     }
 
+    fn advance(&mut self) -> char {
+        let c = self.source.as_bytes()[self.current] as char;
+        self.current += 1;
+        c
+    }
+
+    fn add_token(&mut self, token_type: TokenType, literal: Literal) {
+        let text = &self.source[self.start..self.current];
+        self.tokens.push(Token {
+            token_type,
+            lexeme: text.to_string(),
+            literal,
+            line: self.line,
+        });
+    }
+
     fn scan_token(&mut self) {
         let c = self.advance();
         match c {
-            '(' => self.add_token(TokenType::LeftParen),
-            ')' => self.add_token(TokenType::RightParen),
-            '{' => self.add_token(TokenType::LeftBrace),
-            '}' => self.add_token(TokenType::RightBrace),
-            '*' => self.add_token(TokenType::Star),
-            '.' => self.add_token(TokenType::Dot),
-            ',' => self.add_token(TokenType::Comma),
-            '+' => self.add_token(TokenType::Plus),
-            '-' => self.add_token(TokenType::Minus),
-            ';' => self.add_token(TokenType::Semicolon),
+            '(' => self.add_token(TokenType::LeftParen, Literal::None),
+            ')' => self.add_token(TokenType::RightParen, Literal::None),
+            '{' => self.add_token(TokenType::LeftBrace, Literal::None),
+            '}' => self.add_token(TokenType::RightBrace, Literal::None),
+            '*' => self.add_token(TokenType::Star, Literal::None),
+            '.' => self.add_token(TokenType::Dot, Literal::None),
+            ',' => self.add_token(TokenType::Comma, Literal::None),
+            '+' => self.add_token(TokenType::Plus, Literal::None),
+            '-' => self.add_token(TokenType::Minus, Literal::None),
+            ';' => self.add_token(TokenType::Semicolon, Literal::None),
             '/' => {
                 let token_type = if self.match_char('/') {
                     while self.peek() != '\n' && !self.is_at_end() {
                         self.advance();
                     }
                 } else {
-                    self.add_token(TokenType::Slash);
+                    self.add_token(TokenType::Slash, Literal::None);
                 };
             }
             '!' => {
@@ -69,7 +85,7 @@ impl Scanner {
                 } else {
                     TokenType::Bang
                 };
-                self.add_token(token_type);
+                self.add_token(token_type, Literal::None);
             }
             '=' => {
                 let token_type = if self.match_char('=') {
@@ -77,7 +93,7 @@ impl Scanner {
                 } else {
                     TokenType::Equal
                 };
-                self.add_token(token_type);
+                self.add_token(token_type, Literal::None);
             }
             '>' => {
                 let token_type = if self.match_char('=') {
@@ -85,7 +101,7 @@ impl Scanner {
                 } else {
                     TokenType::Greater
                 };
-                self.add_token(token_type);
+                self.add_token(token_type, Literal::None);
             }
             '<' => {
                 let token_type = if self.match_char('=') {
@@ -93,8 +109,9 @@ impl Scanner {
                 } else {
                     TokenType::Less
                 };
-                self.add_token(token_type);
+                self.add_token(token_type, Literal::None);
             }
+            '"' => self.string(),
             ' ' | '\r' | '\t' => {}
             '\n' => self.line += 1,
             _ => {
@@ -102,22 +119,6 @@ impl Scanner {
                 self.had_error = true;
             }
         }
-    }
-
-    fn advance(&mut self) -> char {
-        let c = self.source.as_bytes()[self.current] as char;
-        self.current += 1;
-        c
-    }
-
-    fn add_token(&mut self, token_type: TokenType) {
-        let text = &self.source[self.start..self.current];
-        self.tokens.push(Token {
-            token_type,
-            lexeme: text.to_string(),
-            literal: Literal::None,
-            line: self.line,
-        });
     }
 
     fn match_char(&mut self, expected: char) -> bool {
@@ -139,5 +140,24 @@ impl Scanner {
             return '\0';
         }
         self.source.as_bytes()[self.current] as char
+    }
+
+    fn string(&mut self) {
+        while self.peek() != '"' && !self.is_at_end() {
+            if self.peek() == '\n' {
+                self.line += 1;
+            }
+            self.advance();
+        }
+
+        if self.is_at_end() {
+            self.had_error = true;
+            return eprintln!("[line {}] Error: Unterminated string.", self.line);
+        }
+
+        self.advance();
+
+        let value = self.source[self.start + 1..self.current - 1].to_string();
+        self.add_token(TokenType::String, Literal::Str(value));
     }
 }
