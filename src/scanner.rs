@@ -115,8 +115,12 @@ impl Scanner {
             ' ' | '\r' | '\t' => {}
             '\n' => self.line += 1,
             _ => {
-                eprintln!("[line {}] Error: Unexpected character: {}", self.line, c);
-                self.had_error = true;
+                if self.is_digit(c) {
+                    self.number();
+                } else {
+                    eprintln!("[line {}] Error: Unexpected character: {}", self.line, c);
+                    self.had_error = true;
+                }
             }
         }
     }
@@ -142,6 +146,17 @@ impl Scanner {
         self.source.as_bytes()[self.current] as char
     }
 
+    fn peek_next(&self) -> char {
+        if self.current + 1 >= self.source.len() {
+            return '\0';
+        }
+        return self.source.as_bytes()[self.current + 1] as char;
+    }
+
+    fn is_digit(&self, c: char) -> bool {
+        return c >= '0' && c <= '9';
+    }
+
     fn string(&mut self) {
         while self.peek() != '"' && !self.is_at_end() {
             if self.peek() == '\n' {
@@ -159,5 +174,22 @@ impl Scanner {
 
         let value = self.source[self.start + 1..self.current - 1].to_string();
         self.add_token(TokenType::String, Literal::Str(value));
+    }
+
+    fn number(&mut self) {
+        while self.is_digit(self.peek()) {
+            self.advance();
+        }
+
+        if self.peek() == '.' && self.is_digit(self.peek_next()) {
+            self.advance();
+
+            while self.is_digit(self.peek()) {
+                self.advance();
+            }
+        }
+
+        let value: &f64 = &self.source[self.start..self.current].parse().unwrap();
+        self.add_token(TokenType::Number, Literal::Number(*value));
     }
 }
