@@ -1,4 +1,4 @@
-use crate::{Literal, Token, TokenType};
+use crate::token::{Literal, Token, TokenType};
 
 pub struct Scanner {
     source: String,
