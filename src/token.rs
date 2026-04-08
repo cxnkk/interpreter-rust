@@ -88,7 +88,7 @@ impl fmt::Display for Token {
             TokenType::Identifier => "IDENTIFIER",
             TokenType::String => "STRING",
             TokenType::Number => "NUMBER",
-            TokenType::AND => "ADD",
+            TokenType::AND => "AND",
             TokenType::CLASS => "CLASS",
             TokenType::ELSE => "ELSE",
             TokenType::FALSE => "FALSE",
