@@ -117,6 +117,8 @@ impl Scanner {
             _ => {
                 if self.is_digit(c) {
                     self.number();
+                } else if self.is_alpha(c) {
+                    self.identifier()
                 } else {
                     eprintln!("[line {}] Error: Unexpected character: {}", self.line, c);
                     self.had_error = true;
@@ -151,6 +153,14 @@ impl Scanner {
             return '\0';
         }
         return self.source.as_bytes()[self.current + 1] as char;
+    }
+
+    fn is_alpha(&self, c: char) -> bool {
+        c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_'
+    }
+
+    fn is_alphanumeric(&self, c: char) -> bool {
+        self.is_alpha(c) || self.is_digit(c)
     }
 
     fn is_digit(&self, c: char) -> bool {
@@ -191,5 +201,35 @@ impl Scanner {
 
         let value: &f64 = &self.source[self.start..self.current].parse().unwrap();
         self.add_token(TokenType::Number, Literal::Number(*value));
+    }
+
+    fn identifier(&mut self) {
+        while self.is_alphanumeric(self.peek()) {
+            self.advance();
+        }
+
+        let text = &self.source[self.start..self.current];
+
+        let token_type = match text {
+            "and" => TokenType::AND,
+            "class" => TokenType::CLASS,
+            "else" => TokenType::ELSE,
+            "false" => TokenType::FALSE,
+            "for" => TokenType::FOR,
+            "fun" => TokenType::FUN,
+            "if" => TokenType::IF,
+            "nil" => TokenType::NIL,
+            "or" => TokenType::OR,
+            "print" => TokenType::PRINT,
+            "return" => TokenType::RETURN,
+            "super" => TokenType::SUPER,
+            "this" => TokenType::THIS,
+            "true" => TokenType::TRUE,
+            "var" => TokenType::VAR,
+            "while" => TokenType::WHILE,
+            _ => TokenType::Identifier,
+        };
+
+        self.add_token(token_type, Literal::None);
     }
 }

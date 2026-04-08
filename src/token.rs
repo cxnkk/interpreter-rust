@@ -25,8 +25,26 @@ pub enum TokenType {
     Less,
     LessEqual,
     // Literals
+    Identifier,
     String,
     Number,
+    // Keywords
+    AND,
+    CLASS,
+    ELSE,
+    FALSE,
+    FOR,
+    FUN,
+    IF,
+    NIL,
+    OR,
+    PRINT,
+    RETURN,
+    SUPER,
+    THIS,
+    TRUE,
+    VAR,
+    WHILE,
 }
 
 #[derive(Debug, Clone)]
@@ -67,8 +85,25 @@ impl fmt::Display for Token {
             TokenType::GreaterEqual => "GREATER_EQUAL",
             TokenType::Less => "LESS",
             TokenType::LessEqual => "LESS_EQUAL",
+            TokenType::Identifier => "IDENTIFIER",
             TokenType::String => "STRING",
             TokenType::Number => "NUMBER",
+            TokenType::AND => "ADD",
+            TokenType::CLASS => "CLASS",
+            TokenType::ELSE => "ELSE",
+            TokenType::FALSE => "FALSE",
+            TokenType::FOR => "FOR",
+            TokenType::FUN => "FUN",
+            TokenType::IF => "IF",
+            TokenType::NIL => "NIL",
+            TokenType::OR => "OR",
+            TokenType::PRINT => "PRINT",
+            TokenType::RETURN => "RETURN",
+            TokenType::SUPER => "SUPER",
+            TokenType::THIS => "THIS",
+            TokenType::TRUE => "TRUE",
+            TokenType::VAR => "VAR",
+            TokenType::WHILE => "WHILE",
         };
 
         let literal_str = match &self.literal {
